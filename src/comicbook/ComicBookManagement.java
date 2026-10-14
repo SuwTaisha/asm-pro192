@@ -9,7 +9,9 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Scanner;
 
 /**
  *
@@ -75,5 +77,49 @@ public class ComicBookManagement {
             throw new Exception("The data file is incomplete: fewer comic books than the number declared on line 1.");
         }
         return line;
+    }
+
+    public void addComicBook(Scanner sc) {
+        try {
+            int id = 1;
+            for (ComicBook cb : comicBooks) {
+                if (cb.getId() >= id) {
+                    id = cb.getId() + 1;
+                }
+            }
+
+            System.out.print("Enter title: ");
+            String title = sc.nextLine().trim();
+            System.out.print("Enter book rental price: ");
+            double price = Double.parseDouble(sc.nextLine().trim());
+            System.out.print("Enter author: ");
+            String author = sc.nextLine().trim();
+            System.out.print("Enter volume: ");
+            int volume = Integer.parseInt(sc.nextLine().trim());
+
+            if (title.isEmpty() || author.isEmpty() || price <= 0 || volume <= 0) {
+                System.out.println("Invalid data. Comic book was not added.");
+                return;
+            }
+
+            comicBooks.add(new ComicBook(id, title, price, author, volume));
+            quantity = comicBooks.size();
+            System.out.println("Added successfully! ID = " + id);
+        } catch (NumberFormatException e) {
+            System.out.println("Price and volume must be numbers. Comic book was not added.");
+        }
+    }
+
+    public void saveComicBook() throws IOException {
+        try (PrintWriter pw = new PrintWriter(DATA_FILE)) {
+            pw.println(comicBooks.size());
+            for (ComicBook cb : comicBooks) {
+                pw.println(cb.getId());
+                pw.println(cb.getTitle());
+                pw.println(String.format(java.util.Locale.US, "%.2f", cb.getBookRentalPrice()));
+                pw.println(cb.getAuthor());
+                pw.println(cb.getVolume());
+            }
+        }
     }
 }
