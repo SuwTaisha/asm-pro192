@@ -118,3 +118,4 @@ public class Main {
             System.out.println("Cannot save data to " + FILE_NAME + ".");
         }
     }
+}
