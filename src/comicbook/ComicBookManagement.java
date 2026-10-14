@@ -9,6 +9,6 @@ package comicbook;
  *
  * @author Suw
  */
-public class ComicManagment {
+public class ComicBookManagement {
     
 }
