@@ -15,7 +15,8 @@ import java.util.Scanner;
 public class Main {
 
     private static final String GROUP_NAME = "SE2102-Group03";
-    // private static final String FILE_NAME = "ComicBooks.txt";
+    private static final String FILE_PATH = "/src/data/comic.txt";
+    private ComicBookManagement cm;
 
     private final Scanner sc = new Scanner(System.in);
     // private final ArrayList<ComicBook> list = new ArrayList<>();
@@ -26,7 +27,12 @@ public class Main {
 
     private void run() {
         // loadFromFile();
-
+        try {
+            cm = new ComicBookManagement(FILE_PATH);
+            cm.loadComicBook();
+        } catch (Exception e) {
+            System.out.println("Error: Cannot Load File! " + e.getMessage());
+        }
         int choice;
         do {
             showMenu();
@@ -34,6 +40,7 @@ public class Main {
 
             switch (choice) {
                 case 1:
+                    cm.addComicBook(sc);
                     break;
                 case 2:
                     break;
@@ -47,7 +54,11 @@ public class Main {
                     showAboutUs();
                     break;
                 case 7:
-                    // saveToFile();
+                    try {
+                        cm.saveComicBook();
+                    } catch (IOException e) {
+                        System.out.println("Cannot save data to " + FILE_PATH + ".");
+                    }
                     System.out.println("Goodbye!");
                     break;
                 default:
@@ -98,7 +109,6 @@ public class Main {
     //         System.out.println("Error while reading " + FILE_NAME + ". Some data may not be loaded.");
     //     }
     // }
-
     // private void saveToFile() {
     //     try (PrintWriter pw = new PrintWriter(FILE_NAME)) {
     //         pw.println(list.size());
@@ -112,7 +122,6 @@ public class Main {
     //     } catch (IOException e) {
     //         System.out.println("Cannot save data to " + FILE_NAME + ".");
     //     }
-
     public void showAboutUs() {
         System.out.println("1. FPT University campus Can Tho");
         System.out.println("2. Information technology college - Software engineering department");
