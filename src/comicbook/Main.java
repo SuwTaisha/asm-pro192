@@ -15,17 +15,17 @@ import java.util.Scanner;
 public class Main {
 
     private static final String GROUP_NAME = "SE2102-Group03";
-    private static final String FILE_NAME = "ComicBooks.txt";
+    // private static final String FILE_NAME = "ComicBooks.txt";
 
     private final Scanner sc = new Scanner(System.in);
-    private final ArrayList<ComicBook> list = new ArrayList<>();
+    // private final ArrayList<ComicBook> list = new ArrayList<>();
 
     public static void main(String[] args) {
         new Main().run();
     }
 
     private void run() {
-        loadFromFile();
+        // loadFromFile();
 
         int choice;
         do {
@@ -34,25 +34,20 @@ public class Main {
 
             switch (choice) {
                 case 1:
-                    addComicBook();
                     break;
                 case 2:
-                    searchByTitle();
                     break;
                 case 3:
-                    searchByAuthor();
                     break;
                 case 4:
-                    updateRentalPrice();
                     break;
                 case 5:
-                    deleteComicBook();
                     break;
                 case 6:
                     showAboutUs();
                     break;
                 case 7:
-                    saveToFile();
+                    // saveToFile();
                     System.out.println("Goodbye!");
                     break;
                 default:
@@ -83,39 +78,51 @@ public class Main {
         }
     }
 
-    private void loadFromFile() {
-        File f = new File(FILE_NAME);
-        if (!f.exists()) {
-            System.out.println("File " + FILE_NAME + " not found. Starting with an empty list.");
-            return;
-        }
-        try (Scanner fs = new Scanner(f)) {
-            int n = Integer.parseInt(fs.nextLine().trim());
-            for (int i = 0; i < n; i++) {
-                int id = Integer.parseInt(fs.nextLine().trim());
-                String title = fs.nextLine().trim();
-                double price = Double.parseDouble(fs.nextLine().trim());
-                String author = fs.nextLine().trim();
-                int volume = Integer.parseInt(fs.nextLine().trim());
-                list.add(new ComicBook(id, title, price, author, volume));
-            }
-        } catch (Exception e) {
-            System.out.println("Error while reading " + FILE_NAME + ". Some data may not be loaded.");
-        }
-    }
+    // private void loadFromFile() {
+    //     File f = new File(FILE_NAME);
+    //     if (!f.exists()) {
+    //         System.out.println("File " + FILE_NAME + " not found. Starting with an empty list.");
+    //         return;
+    //     }
+    //     try (Scanner fs = new Scanner(f)) {
+    //         int n = Integer.parseInt(fs.nextLine().trim());
+    //         for (int i = 0; i < n; i++) {
+    //             int id = Integer.parseInt(fs.nextLine().trim());
+    //             String title = fs.nextLine().trim();
+    //             double price = Double.parseDouble(fs.nextLine().trim());
+    //             String author = fs.nextLine().trim();
+    //             int volume = Integer.parseInt(fs.nextLine().trim());
+    //             list.add(new ComicBook(id, title, price, author, volume));
+    //         }
+    //     } catch (Exception e) {
+    //         System.out.println("Error while reading " + FILE_NAME + ". Some data may not be loaded.");
+    //     }
+    // }
 
-    private void saveToFile() {
-        try (PrintWriter pw = new PrintWriter(FILE_NAME)) {
-            pw.println(list.size());
-            for (ComicBook b : list) {
-                pw.println(b.getId());
-                pw.println(b.getTitle());
-                pw.println(String.format(Locale.US, "%.2f", b.getBookRentalPrice()));
-                pw.println(b.getAuthor());
-                pw.println(b.getVolume());
-            }
-        } catch (IOException e) {
-            System.out.println("Cannot save data to " + FILE_NAME + ".");
-        }
+    // private void saveToFile() {
+    //     try (PrintWriter pw = new PrintWriter(FILE_NAME)) {
+    //         pw.println(list.size());
+    //         for (ComicBook b : list) {
+    //             pw.println(b.getId());
+    //             pw.println(b.getTitle());
+    //             pw.println(String.format(Locale.US, "%.2f", b.getBookRentalPrice()));
+    //             pw.println(b.getAuthor());
+    //             pw.println(b.getVolume());
+    //         }
+    //     } catch (IOException e) {
+    //         System.out.println("Cannot save data to " + FILE_NAME + ".");
+    //     }
+
+    public void showAboutUs() {
+        System.out.println("1. FPT University campus Can Tho");
+        System.out.println("2. Information technology college - Software engineering department");
+        System.out.println("3. CEA201 - Computer Organization and Architecture");
+        System.out.println("4. Class SE2102");
+        System.out.println("5. Mentor Vo Hong Khanh");
+        System.out.println("6. Group 03");
+        System.out.println("7. Lý Hoàng Mến - CE210682 - Leader\n"
+                + "   Đặng Thái Hưng - CE210124 - Member\n"
+                + "   Nguyễn Vũ Phước Vinh - CE210586 - Member\n"
+                + "   Đinh Minh Khôi - CE210346 - Member");
     }
 }
