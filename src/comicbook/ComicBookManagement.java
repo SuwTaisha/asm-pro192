@@ -11,6 +11,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Locale;
 import java.util.Scanner;
 
 /**
@@ -121,5 +122,64 @@ public class ComicBookManagement {
                 pw.println(cb.getVolume());
             }
         }
+    }
+
+
+    public void searchByTitle(Scanner sc) {
+        if (comicBooks.isEmpty()) {
+            System.out.println("The comic book store is empty.");
+            return;
+        }
+        String query;
+        do {
+            System.out.print("Enter title keyword to search: ");
+            query = sc.nextLine().trim().toLowerCase();
+            if (query.isEmpty()) {
+                System.out.println("Search key cannot be empty. Please try again.");
+            }
+        } while (query.isEmpty());
+
+        ArrayList<ComicBook> result = new ArrayList<>();
+        for (ComicBook b : comicBooks) {
+            if (b.getTitle().toLowerCase().contains(query) == true) {
+                result.add(b);
+            }
+        }
+
+        if (result.isEmpty()) {
+            System.out.println("No comic book found with title containing \"" + query + "\".");
+        } else {
+            System.out.println("Found " + result.size() + " comic book(s):");
+            printSearchResult(result);
+        }
+    }
+
+    private void printSearchResult(ArrayList<ComicBook> list) {
+        int wTitle = 5, wAuthor = 6;
+        for (ComicBook b : list) {
+            wTitle = Math.max(wTitle, b.getTitle().length());
+            wAuthor = Math.max(wAuthor, b.getAuthor().length());
+        }
+        String line = "+" + dashes(6) + "+" + dashes(wTitle + 2) + "+" + dashes(14)
+                + "+" + dashes(wAuthor + 2) + "+" + dashes(8) + "+";
+        String headFmt = "| %4s | %-" + wTitle + "s | %12s | %-" + wAuthor + "s | %6s |%n";
+        String rowFmt = "| %4d | %-" + wTitle + "s | %12.2f | %-" + wAuthor + "s | %6d |%n";
+
+        System.out.println(line);
+        System.out.printf(headFmt, "ID", "Title", "Rental Price", "Author", "Volume");
+        System.out.println(line);
+        for (ComicBook b : list) {
+            System.out.print(String.format(Locale.US, rowFmt, b.getId(), b.getTitle(),
+                    b.getBookRentalPrice(), b.getAuthor(), b.getVolume()));
+        }
+        System.out.println(line);
+    }
+
+    private String dashes(int n) {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < n; i++) {
+            sb.append('-');
+        }
+        return sb.toString();
     }
 }
