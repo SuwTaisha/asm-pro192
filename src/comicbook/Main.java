@@ -15,7 +15,7 @@ import java.util.Scanner;
 public class Main {
 
     private static final String GROUP_NAME = "SE2102-Group03";
-    private static final String FILE_PATH = "/src/data/comic.txt";
+    private static final String FILE_PATH = "./src/data/comic.txt";
     private ComicBookManagement cm;
 
     private final Scanner sc = new Scanner(System.in);

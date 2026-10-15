@@ -79,30 +79,23 @@ Sailor Moon
 2.10
 Naoko Takeuchi
 2
-
-
-
-
-
-
 17
-18
-Vinland Saga
-
-
-20
-Haruichi Furudate
-13
-20
-Haikyu!!
-2.60
-3.60
-Gintama
-2.50
-Hideaki Sorachi
-Makoto Yukimura
-8
-19
 Spy x Family
 3.40
 Tatsuya Endo
+5
+18
+Vinland Saga
+3.60
+Makoto Yukimura
+8
+19
+Gintama
+2.50
+Hideaki Sorachi
+20
+20
+Haikyu!!
+2.60
+Haruichi Furudate
+13
