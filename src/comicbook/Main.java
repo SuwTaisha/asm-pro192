@@ -46,6 +46,7 @@ public class Main {
                     cm.searchByTitle(sc);
                     break;
                 case 3:
+                    cm.findBookByAuthor(sc);
                     break;
                 case 4:
                     cm.updateComicBook(sc);
