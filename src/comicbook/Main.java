@@ -48,6 +48,7 @@ public class Main {
                 case 3:
                     break;
                 case 4:
+                    cm.updateComicBook(sc);
                     break;
                 case 5:
                     break;

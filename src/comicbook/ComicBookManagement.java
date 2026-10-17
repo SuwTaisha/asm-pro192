@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package comicbook;
 
 import java.io.BufferedReader;
@@ -354,13 +349,5 @@ public class ComicBookManagement {
                     b.getBookRentalPrice(), b.getAuthor(), b.getVolume()));
         }
         System.out.println(line);
-    }
-
-    private String dashes(int n) {
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < n; i++) {
-            sb.append('-');
-        }
-        return sb.toString();
     }
 }
