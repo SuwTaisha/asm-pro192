@@ -19,14 +19,12 @@ public class Main {
     private ComicBookManagement cm;
 
     private final Scanner sc = new Scanner(System.in);
-    // private final ArrayList<ComicBook> list = new ArrayList<>();
 
     public static void main(String[] args) {
         new Main().run();
     }
 
     private void run() {
-        // loadFromFile();
         try {
             cm = new ComicBookManagement(FILE_PATH);
             cm.loadComicBook();
@@ -92,39 +90,6 @@ public class Main {
         }
     }
 
-    // private void loadFromFile() {
-    //     File f = new File(FILE_NAME);
-    //     if (!f.exists()) {
-    //         System.out.println("File " + FILE_NAME + " not found. Starting with an empty list.");
-    //         return;
-    //     }
-    //     try (Scanner fs = new Scanner(f)) {
-    //         int n = Integer.parseInt(fs.nextLine().trim());
-    //         for (int i = 0; i < n; i++) {
-    //             int id = Integer.parseInt(fs.nextLine().trim());
-    //             String title = fs.nextLine().trim();
-    //             double price = Double.parseDouble(fs.nextLine().trim());
-    //             String author = fs.nextLine().trim();
-    //             int volume = Integer.parseInt(fs.nextLine().trim());
-    //             list.add(new ComicBook(id, title, price, author, volume));
-    //         }
-    //     } catch (Exception e) {
-    //         System.out.println("Error while reading " + FILE_NAME + ". Some data may not be loaded.");
-    //     }
-    // }
-    // private void saveToFile() {
-    //     try (PrintWriter pw = new PrintWriter(FILE_NAME)) {
-    //         pw.println(list.size());
-    //         for (ComicBook b : list) {
-    //             pw.println(b.getId());
-    //             pw.println(b.getTitle());
-    //             pw.println(String.format(Locale.US, "%.2f", b.getBookRentalPrice()));
-    //             pw.println(b.getAuthor());
-    //             pw.println(b.getVolume());
-    //         }
-    //     } catch (IOException e) {
-    //         System.out.println("Cannot save data to " + FILE_NAME + ".");
-    //     }
     public void showAboutUs() {
         System.out.println("1. FPT University campus Can Tho");
         System.out.println("2. Information technology college - Software engineering department");

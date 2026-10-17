@@ -19,9 +19,9 @@ public class ComicBookManagement {
     private ArrayList<ComicBook> comicBooks;
     private int quantity;
 
-    public ComicBookManagement(String DATA_FILE) throws Exception {
+    public ComicBookManagement(String DATA_FILE) throws IllegalArgumentException{
         if (DATA_FILE.equals("")) {
-            throw new Exception("The url of comic books data file can't be empty!");
+            throw new IllegalArgumentException("The url of comic books data file can't be empty!");
         } else {
             this.DATA_FILE = DATA_FILE;
             this.comicBooks = new ArrayList<>();
@@ -89,34 +89,32 @@ public class ComicBookManagement {
     }
 
     public void addComicBook(Scanner sc) {
-        try {
-            int id = 1;
-            for (ComicBook cb : comicBooks) {
-                if (cb.getId() >= id) {
-                    id = cb.getId() + 1;
-                }
+        int id = 1;
+        for (ComicBook cb : comicBooks) {
+            if (cb.getId() >= id) {
+                id = cb.getId() + 1;
             }
-
-            System.out.print("Enter title: ");
-            String title = sc.nextLine().trim();
-            System.out.print("Enter book rental price: ");
-            double price = Double.parseDouble(sc.nextLine().trim());
-            System.out.print("Enter author: ");
-            String author = sc.nextLine().trim();
-            System.out.print("Enter volume: ");
-            int volume = Integer.parseInt(sc.nextLine().trim());
-
-            if (title.isEmpty() || author.isEmpty() || price <= 0 || volume <= 0) {
-                System.out.println("Invalid data. Comic book was not added.");
-                return;
-            }
-
-            comicBooks.add(new ComicBook(id, title, price, author, volume));
-            quantity = comicBooks.size();
-            System.out.println("Added successfully! ID = " + id);
-        } catch (NumberFormatException e) {
-            System.out.println("Price and volume must be numbers. Comic book was not added.");
         }
+
+        String title;
+        String author;
+        int volume;
+        while (true) {
+            title = readTitle(sc);
+            author = readAuthor(sc);
+            volume = readVolume(sc);
+            if (isDuplicate(null, title, author, volume)) {
+                System.out.println("Error: a comic book with the same title, author and volume already exists. Please enter title, author and volume again.");
+                continue;
+            }
+            break;
+        }
+        double price = readPrice(sc, null);
+
+        comicBooks.add(new ComicBook(id, title, price, author, volume));
+        quantity = comicBooks.size();
+        System.out.println("Added successfully! ID = " + id);
+        displayAll();
     }
 
     public void updateComicBook(Scanner sc) {
@@ -133,20 +131,9 @@ public class ComicBookManagement {
             return;
         }
         System.out.println("Press Enter to keep the current value.");
-        String title = readTitle(sc, book.getTitle());
         double price = readPrice(sc, book.getBookRentalPrice());
-        String author = readAuthor(sc, book.getAuthor());
-        int volume = readVolume(sc, book.getVolume());
 
-        if (isDuplicate(book, title, author, volume)) {
-            System.out.println("Error: another comic book with the same title, author and volume already exists. Update cancelled.");
-            return;
-        }
-
-        book.setTitle(title);
         book.setBookRentalPrice(price);
-        book.setAuthor(author);
-        book.setVolume(volume);
 
         System.out.println("Update successful.");
         displayAll();
@@ -183,7 +170,9 @@ public class ComicBookManagement {
 
         if (confirm.equalsIgnoreCase("Y")) {
             comicBooks.remove(book);
+            quantity = comicBooks.size();
             System.out.println("Deleted successfully!");
+            displayAll();
         } else {
             System.out.println("Delete cancelled.");
         }
@@ -320,84 +309,90 @@ public class ComicBookManagement {
         }
     }
 
-    private String readTitle(Scanner sc, String current) {
+    private String readTitle(Scanner sc) {
         while (true) {
-            System.out.print("New title [" + current + "]: ");
+            System.out.print("Enter title: ");
             String input = sc.nextLine().trim();
             if (input.isEmpty()) {
-                return current;
+                System.out.println("Error in TITLE: it must not be empty.");
+                continue;
             }
-            try {
-                if (!input.matches("[\\p{L}0-9 :!&'.,?-]+")) {
-                    throw new IllegalArgumentException(
-                            "Title contains invalid characters. Allowed: letters, digits, spaces and : ! & ' . , ? -");
-                }
-                return input;
-            } catch (IllegalArgumentException e) {
-                System.out.println("Error in TITLE: " + e.getMessage());
+            if (!input.matches("[\\p{L}0-9 :!&'.,?-]+")) {
+                System.out.println("Error in TITLE: invalid characters. Allowed: letters, digits, spaces and : ! & ' . , ? -");
+                continue;
             }
+            return input;
         }
     }
 
-    private double readPrice(Scanner sc, double current) {
+    // current == null: required input (add). current != null: Enter keeps the current value (update).
+    private double readPrice(Scanner sc, Double current) {
         while (true) {
-            System.out.print("New rental price [" + String.format(java.util.Locale.US, "%.2f", current) + "]: ");
+            if (current == null) {
+                System.out.print("Enter book rental price: ");
+            } else {
+                System.out.print("New rental price [" + String.format(Locale.US, "%.2f", current) + "]: ");
+            }
             String input = sc.nextLine().trim();
             if (input.isEmpty()) {
-                return current;
+                if (current != null) {
+                    return current;
+                }
+                System.out.println("Error in RENTAL PRICE: it must not be empty.");
+                continue;
             }
+            if (!input.matches("\\d+(\\.\\d{1,2})?")) {
+                System.out.println("Error in RENTAL PRICE: it must be a number with at most 2 decimals, like 2.5 or 2.50 (digits and one dot only).");
+                continue;
+            }
+            double price;
             try {
-                if (!input.matches("\\d+(\\.\\d{1,2})?")) {
-                    throw new IllegalArgumentException(
-                            "Rental price must be a number with at most 2 decimals, like 2.5 or 2.50 (digits and one dot only).");
-                }
-                double price = Double.parseDouble(input);
-                if (price <= 0) {
-                    throw new IllegalArgumentException("Rental price must be greater than 0.");
-                }
-                return price;
-            } catch (IllegalArgumentException e) {
-                System.out.println("Error in RENTAL PRICE: " + e.getMessage());
+                price = Double.parseDouble(input);
+            } catch (NumberFormatException e) {
+                System.out.println("Error in RENTAL PRICE: invalid number.");
+                continue;
             }
+            if (price <= 0 || Double.isInfinite(price)) {
+                System.out.println("Error in RENTAL PRICE: it must be greater than 0 and not too large.");
+                continue;
+            }
+            return price;
         }
     }
 
-    private String readAuthor(Scanner sc, String current) {
+    private String readAuthor(Scanner sc) {
         while (true) {
-            System.out.print("New author [" + current + "]: ");
+            System.out.print("Enter author: ");
             String input = sc.nextLine().trim();
             if (input.isEmpty()) {
-                return current;
+                System.out.println("Error in AUTHOR: it must not be empty.");
+                continue;
             }
-            try {
-                if (!input.matches("[\\p{L} .'-]+")) {
-                    throw new IllegalArgumentException(
-                            "Author name contains invalid characters. Allowed: letters, spaces and . ' -");
-                }
-                return input;
-            } catch (IllegalArgumentException e) {
-                System.out.println("Error in AUTHOR: " + e.getMessage());
+            if (!input.matches("[\\p{L} .'-]+")) {
+                System.out.println("Error in AUTHOR: invalid characters. Allowed: letters, spaces and . ' -");
+                continue;
             }
+            return input;
         }
     }
 
-    private int readVolume(Scanner sc, int current) {
+    private int readVolume(Scanner sc) {
         while (true) {
-            System.out.print("New volume [" + current + "]: ");
+            System.out.print("Enter volume: ");
             String input = sc.nextLine().trim();
             if (input.isEmpty()) {
-                return current;
+                System.out.println("Error in VOLUME: it must not be empty.");
+                continue;
             }
             try {
                 int volume = Integer.parseInt(input);
                 if (volume <= 0) {
-                    throw new IllegalArgumentException("Volume must be greater than 0.");
+                    System.out.println("Error in VOLUME: it must be greater than 0.");
+                    continue;
                 }
                 return volume;
             } catch (NumberFormatException e) {
                 System.out.println("Error in VOLUME: it must be a whole number (digits only, not too large).");
-            } catch (IllegalArgumentException e) {
-                System.out.println("Error in VOLUME: " + e.getMessage());
             }
         }
     }
