@@ -182,4 +182,24 @@ public class ComicBookManagement {
         }
         return sb.toString();
     }
+    public void findBookByAuthor(Scanner sc) {
+    System.out.print("Please enter author: ");
+    String findBook = sc.nextLine().trim();
+
+    ArrayList<ComicBook> result = new ArrayList<>();
+
+    for (ComicBook cb : comicBooks) {
+        if (cb.getAuthor().equalsIgnoreCase(findBook)) {
+            result.add(cb);
+        }
+    }
+
+    if (result.isEmpty()) {
+        System.out.println("No book found!");
+    } else {
+        for (ComicBook cb : result) {
+            printSearchResult(result);
+        }
+    }
+}
 }
