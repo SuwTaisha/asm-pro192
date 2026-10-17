@@ -43,6 +43,7 @@ public class Main {
                     cm.addComicBook(sc);
                     break;
                 case 2:
+                    cm.searchByTitle(sc);
                     break;
                 case 3:
                     break;
