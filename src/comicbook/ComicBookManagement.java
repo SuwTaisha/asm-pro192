@@ -75,6 +75,19 @@ public class ComicBookManagement {
         return line;
     }
 
+    public void saveComicBook() throws IOException {
+        try (PrintWriter pw = new PrintWriter(DATA_FILE)) {
+            pw.println(comicBooks.size());
+            for (ComicBook cb : comicBooks) {
+                pw.println(cb.getId());
+                pw.println(cb.getTitle());
+                pw.println(String.format(java.util.Locale.US, "%.2f", cb.getBookRentalPrice()));
+                pw.println(cb.getAuthor());
+                pw.println(cb.getVolume());
+            }
+        }
+    }
+
     public void addComicBook(Scanner sc) {
         try {
             int id = 1;
@@ -114,8 +127,11 @@ public class ComicBookManagement {
 
         displayAll();
 
-        ComicBook book = findBookById(sc);
-
+        ComicBook book = findBookById(sc, "update");
+        if (book == null) {
+            System.out.println("Update cancelled.");
+            return;
+        }
         System.out.println("Press Enter to keep the current value.");
         String title = readTitle(sc, book.getTitle());
         double price = readPrice(sc, book.getBookRentalPrice());
@@ -136,10 +152,160 @@ public class ComicBookManagement {
         displayAll();
     }
 
-    private ComicBook findBookById(Scanner sc) {
+    public void deleteComicBook(Scanner sc) {
+        if (comicBooks.isEmpty()) {
+            System.out.println("The comic book list is empty. Nothing to delete.");
+            return;
+        }
+
+        displayAll();
+
+        ComicBook book = findBookById(sc, "delete");
+        if (book == null) {
+            System.out.println("Delete cancelled.");
+            return;
+        }
+
+        ArrayList<ComicBook> selected = new ArrayList<>();
+        selected.add(book);
+        System.out.println("You are about to delete this comic book:");
+        printSearchResult(selected);
+
+        String confirm;
         while (true) {
-            System.out.print("Enter the ID of the comic book to update: ");
+            System.out.print("Are you sure you want to delete it? (Y/N): ");
+            confirm = sc.nextLine().trim();
+            if (confirm.equalsIgnoreCase("Y") || confirm.equalsIgnoreCase("N")) {
+                break;
+            }
+            System.out.println("Please enter Y or N.");
+        }
+
+        if (confirm.equalsIgnoreCase("Y")) {
+            comicBooks.remove(book);
+            System.out.println("Deleted successfully!");
+        } else {
+            System.out.println("Delete cancelled.");
+        }
+    }
+
+    public void findBookByAuthor(Scanner sc) {
+        System.out.print("Please enter author: ");
+        String findBook = sc.nextLine().trim();
+
+        ArrayList<ComicBook> result = new ArrayList<>();
+
+        for (ComicBook cb : comicBooks) {
+            if (cb.getAuthor().equalsIgnoreCase(findBook)) {
+                result.add(cb);
+            }
+        }
+
+        if (result.isEmpty()) {
+            System.out.println("No book found!");
+        } else {
+            System.out.println("Found " + result.size() + " comic book(s):");
+            printSearchResult(result);
+        }
+    }
+
+    public void searchByTitle(Scanner sc) {
+        if (comicBooks.isEmpty()) {
+            System.out.println("The comic book store is empty.");
+            return;
+        }
+        String query;
+        do {
+            System.out.print("Enter title keyword to search: ");
+            query = sc.nextLine().trim().toLowerCase();
+            if (query.isEmpty()) {
+                System.out.println("Search key cannot be empty. Please try again.");
+            }
+        } while (query.isEmpty());
+
+        ArrayList<ComicBook> result = new ArrayList<>();
+        for (ComicBook b : comicBooks) {
+            if (b.getTitle().toLowerCase().contains(query) == true) {
+                result.add(b);
+            }
+        }
+
+        if (result.isEmpty()) {
+            System.out.println("No comic book found with title containing \"" + query + "\".");
+        } else {
+            System.out.println("Found " + result.size() + " comic book(s):");
+            printSearchResult(result);
+        }
+    }
+
+    private void displayAll() {
+        if (comicBooks.isEmpty()) {
+            System.out.println("The comic book list is empty.");
+            return;
+        }
+
+        int idW = 2, titleW = 5, priceW = 5, authorW = 6, volW = 6;
+        for (ComicBook cb : comicBooks) {
+            idW = Math.max(idW, String.valueOf(cb.getId()).length());
+            titleW = Math.max(titleW, cb.getTitle().length());
+            priceW = Math.max(priceW, String.format(java.util.Locale.US, "%.2f", cb.getBookRentalPrice()).length());
+            authorW = Math.max(authorW, cb.getAuthor().length());
+            volW = Math.max(volW, String.valueOf(cb.getVolume()).length());
+        }
+
+        String line = "+" + dashes(idW + 2) + "+" + dashes(titleW + 2) + "+" + dashes(priceW + 2)
+                + "+" + dashes(authorW + 2) + "+" + dashes(volW + 2) + "+";
+        String headerFormat = "| %-" + idW + "s | %-" + titleW + "s | %-" + priceW + "s | %-" + authorW + "s | %-" + volW + "s |%n";
+        String rowFormat = "| %" + idW + "d | %-" + titleW + "s | %" + priceW + "s | %-" + authorW + "s | %" + volW + "d |%n";
+
+        System.out.println(line);
+        System.out.printf(headerFormat, "ID", "Title", "Price", "Author", "Volume");
+        System.out.println(line);
+        for (ComicBook cb : comicBooks) {
+            System.out.printf(rowFormat, cb.getId(), cb.getTitle(),
+                    String.format(java.util.Locale.US, "%.2f", cb.getBookRentalPrice()),
+                    cb.getAuthor(), cb.getVolume());
+        }
+        System.out.println(line);
+    }
+
+    private void printSearchResult(ArrayList<ComicBook> list) {
+        int wTitle = 5, wAuthor = 6;
+        for (ComicBook b : list) {
+            wTitle = Math.max(wTitle, b.getTitle().length());
+            wAuthor = Math.max(wAuthor, b.getAuthor().length());
+        }
+        String line = "+" + dashes(6) + "+" + dashes(wTitle + 2) + "+" + dashes(14)
+                + "+" + dashes(wAuthor + 2) + "+" + dashes(8) + "+";
+        String headFmt = "| %4s | %-" + wTitle + "s | %12s | %-" + wAuthor + "s | %6s |%n";
+        String rowFmt = "| %4d | %-" + wTitle + "s | %12.2f | %-" + wAuthor + "s | %6d |%n";
+
+        System.out.println(line);
+        System.out.printf(headFmt, "ID", "Title", "Rental Price", "Author", "Volume");
+        System.out.println(line);
+        for (ComicBook b : list) {
+            System.out.print(String.format(Locale.US, rowFmt, b.getId(), b.getTitle(),
+                    b.getBookRentalPrice(), b.getAuthor(), b.getVolume()));
+        }
+        System.out.println(line);
+
+    }
+
+    private String dashes(int n) {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < n; i++) {
+            sb.append('-');
+        }
+        return sb.toString();
+    }
+
+    private ComicBook findBookById(Scanner sc, String action) {
+        while (true) {
+            System.out.print("Enter the ID of the comic book to " + action + " (Enter to cancel): ");
             String input = sc.nextLine().trim();
+            if (input.isEmpty()) {
+                return null;
+            }
             try {
                 int id = Integer.parseInt(input);
                 for (ComicBook cb : comicBooks) {
@@ -246,127 +412,5 @@ public class ComicBookManagement {
             }
         }
         return false;
-    }
-
-    private void displayAll() {
-        if (comicBooks.isEmpty()) {
-            System.out.println("The comic book list is empty.");
-            return;
-        }
-
-        int idW = 2, titleW = 5, priceW = 5, authorW = 6, volW = 6; // widths of the header names
-        for (ComicBook cb : comicBooks) {
-            idW = Math.max(idW, String.valueOf(cb.getId()).length());
-            titleW = Math.max(titleW, cb.getTitle().length());
-            priceW = Math.max(priceW, String.format(java.util.Locale.US, "%.2f", cb.getBookRentalPrice()).length());
-            authorW = Math.max(authorW, cb.getAuthor().length());
-            volW = Math.max(volW, String.valueOf(cb.getVolume()).length());
-        }
-
-        String line = "+" + dashes(idW + 2) + "+" + dashes(titleW + 2) + "+" + dashes(priceW + 2)
-                + "+" + dashes(authorW + 2) + "+" + dashes(volW + 2) + "+";
-        String headerFormat = "| %-" + idW + "s | %-" + titleW + "s | %-" + priceW + "s | %-" + authorW + "s | %-" + volW + "s |%n";
-        String rowFormat = "| %" + idW + "d | %-" + titleW + "s | %" + priceW + "s | %-" + authorW + "s | %" + volW + "d |%n";
-
-        System.out.println(line);
-        System.out.printf(headerFormat, "ID", "Title", "Price", "Author", "Volume");
-        System.out.println(line);
-        for (ComicBook cb : comicBooks) {
-            System.out.printf(rowFormat, cb.getId(), cb.getTitle(),
-                    String.format(java.util.Locale.US, "%.2f", cb.getBookRentalPrice()),
-                    cb.getAuthor(), cb.getVolume());
-        }
-        System.out.println(line);
-    }
-
-    private String dashes(int n) {
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < n; i++) {
-            sb.append('-');
-        }
-        return sb.toString();
-    }
-
-    public void saveComicBook() throws IOException {
-        try (PrintWriter pw = new PrintWriter(DATA_FILE)) {
-            pw.println(comicBooks.size());
-            for (ComicBook cb : comicBooks) {
-                pw.println(cb.getId());
-                pw.println(cb.getTitle());
-                pw.println(String.format(java.util.Locale.US, "%.2f", cb.getBookRentalPrice()));
-                pw.println(cb.getAuthor());
-                pw.println(cb.getVolume());
-            }
-        }
-    }
-
-    public void findBookByAuthor(Scanner sc) {
-        System.out.print("Please enter author: ");
-        String findBook = sc.nextLine().trim();
-
-        ArrayList<ComicBook> result = new ArrayList<>();
-
-        for (ComicBook cb : comicBooks) {
-            if (cb.getAuthor().equalsIgnoreCase(findBook)) {
-                result.add(cb);
-            }
-        }
-
-        if (result.isEmpty()) {
-            System.out.println("No book found!");
-        } else {
-            System.out.println("Found " + result.size() + " comic book(s):");
-            printSearchResult(result);
-        }
-    }
-
-    public void searchByTitle(Scanner sc) {
-        if (comicBooks.isEmpty()) {
-            System.out.println("The comic book store is empty.");
-            return;
-        }
-        String query;
-        do {
-            System.out.print("Enter title keyword to search: ");
-            query = sc.nextLine().trim().toLowerCase();
-            if (query.isEmpty()) {
-                System.out.println("Search key cannot be empty. Please try again.");
-            }
-        } while (query.isEmpty());
-
-        ArrayList<ComicBook> result = new ArrayList<>();
-        for (ComicBook b : comicBooks) {
-            if (b.getTitle().toLowerCase().contains(query) == true) {
-                result.add(b);
-            }
-        }
-
-        if (result.isEmpty()) {
-            System.out.println("No comic book found with title containing \"" + query + "\".");
-        } else {
-            System.out.println("Found " + result.size() + " comic book(s):");
-            printSearchResult(result);
-        }
-    }
-
-    private void printSearchResult(ArrayList<ComicBook> list) {
-        int wTitle = 5, wAuthor = 6;
-        for (ComicBook b : list) {
-            wTitle = Math.max(wTitle, b.getTitle().length());
-            wAuthor = Math.max(wAuthor, b.getAuthor().length());
-        }
-        String line = "+" + dashes(6) + "+" + dashes(wTitle + 2) + "+" + dashes(14)
-                + "+" + dashes(wAuthor + 2) + "+" + dashes(8) + "+";
-        String headFmt = "| %4s | %-" + wTitle + "s | %12s | %-" + wAuthor + "s | %6s |%n";
-        String rowFmt = "| %4d | %-" + wTitle + "s | %12.2f | %-" + wAuthor + "s | %6d |%n";
-
-        System.out.println(line);
-        System.out.printf(headFmt, "ID", "Title", "Rental Price", "Author", "Volume");
-        System.out.println(line);
-        for (ComicBook b : list) {
-            System.out.print(String.format(Locale.US, rowFmt, b.getId(), b.getTitle(),
-                    b.getBookRentalPrice(), b.getAuthor(), b.getVolume()));
-        }
-        System.out.println(line);
     }
 }
