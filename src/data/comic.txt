@@ -1,7 +1,7 @@
-20
+21
 1
 One Piece
-2.50
+3.00
 Eiichiro Oda
 1
 2
@@ -99,3 +99,8 @@ Haikyu!!
 2.60
 Haruichi Furudate
 13
+21
+Naruto
+1.00
+asas
+1

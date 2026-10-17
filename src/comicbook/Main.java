@@ -50,6 +50,7 @@ public class Main {
                     cm.updateComicBook(sc);
                     break;
                 case 5:
+                    cm.deleteComicBook(sc);
                     break;
                 case 6:
                     showAboutUs();

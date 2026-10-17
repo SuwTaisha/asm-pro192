@@ -325,7 +325,6 @@ public class ComicBookManagement {
         }
     }
 
-    // current == null: required input (add). current != null: Enter keeps the current value (update).
     private double readPrice(Scanner sc, Double current) {
         while (true) {
             if (current == null) {
