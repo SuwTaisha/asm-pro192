@@ -18,56 +18,66 @@ public class ComicBook {
     private int volume;
 
     public ComicBook(int id, String title, double bookRentalPrice, String author, int volume) {
-        this.id = id;
-        this.title = title;
-        this.bookRentalPrice = bookRentalPrice;
-        this.author = author;
-        this.volume = volume;
+        setId(id);
+        setTitle(title);
+        setBookRentalPrice(bookRentalPrice);
+        setAuthor(author);
+        setVolume(volume);
     }
 
-    @Override
-    public String toString() {
-        return "ComicBook{" + "id=" + id + ", title=" + title + ", bookRentalPrice=" + bookRentalPrice + ", author=" + author + ", volume=" + volume + '}';
+    public void setId(int id) {
+        if (id <= 0) {
+            throw new IllegalArgumentException("ID must be greater than 0.");
+        }
+        this.id = id;
+    }
+
+    public void setTitle(String title) {
+        if (title == null || title.trim().isEmpty()) {
+            throw new IllegalArgumentException("Title must not be empty.");
+        }
+        this.title = title.trim();
+    }
+
+    public void setBookRentalPrice(double price) {
+        if (price <= 0 || Double.isNaN(price) || Double.isInfinite(price)) {
+            throw new IllegalArgumentException("Rental price must be greater than 0.");
+        }
+        this.bookRentalPrice = price;
+    }
+
+    public void setAuthor(String author) {
+        if (author == null || author.trim().isEmpty()) {
+            throw new IllegalArgumentException("Author must not be empty.");
+        }
+        this.author = author.trim();
+    }
+
+    public void setVolume(int volume) {
+        if (volume <= 0) {
+            throw new IllegalArgumentException("Volume must be greater than 0.");
+        }
+        this.volume = volume;
     }
 
     public int getId() {
         return id;
     }
 
-    public void setId(int id) {
-        this.id = id;
-    }
-
     public String getTitle() {
         return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
     }
 
     public double getBookRentalPrice() {
         return bookRentalPrice;
     }
 
-    public void setBookRentalPrice(double bookRentalPrice) {
-        this.bookRentalPrice = bookRentalPrice;
-    }
-
     public String getAuthor() {
         return author;
-    }
-
-    public void setAuthor(String author) {
-        this.author = author;
     }
 
     public int getVolume() {
         return volume;
     }
-
-    public void setVolume(int volume) {
-        this.volume = volume;
-    }
-
+    
 }
