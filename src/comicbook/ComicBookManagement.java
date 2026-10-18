@@ -18,8 +18,11 @@ public class ComicBookManagement {
     private String DATA_FILE;
     private ArrayList<ComicBook> comicBooks;
     private int quantity;
+    private final String LINE = "+------+--------------------------------+--------------+---------------------------+--------+";
+    private final String HEAD = "| %4s | %-30.30s | %12s | %-25.25s | %6s |%n";
+    private final String ROW = "| %4d | %-30.30s | %12.2f | %-25.25s | %6d |%n";
 
-    public ComicBookManagement(String DATA_FILE) throws IllegalArgumentException{
+    public ComicBookManagement(String DATA_FILE) throws IllegalArgumentException {
         if (DATA_FILE.equals("")) {
             throw new IllegalArgumentException("The url of comic books data file can't be empty!");
         } else {
@@ -232,52 +235,18 @@ public class ComicBookManagement {
             System.out.println("The comic book list is empty.");
             return;
         }
-
-        int idW = 2, titleW = 5, priceW = 5, authorW = 6, volW = 6;
-        for (ComicBook cb : comicBooks) {
-            idW = Math.max(idW, String.valueOf(cb.getId()).length());
-            titleW = Math.max(titleW, cb.getTitle().length());
-            priceW = Math.max(priceW, String.format(java.util.Locale.US, "%.2f", cb.getBookRentalPrice()).length());
-            authorW = Math.max(authorW, cb.getAuthor().length());
-            volW = Math.max(volW, String.valueOf(cb.getVolume()).length());
-        }
-
-        String line = "+" + dashes(idW + 2) + "+" + dashes(titleW + 2) + "+" + dashes(priceW + 2)
-                + "+" + dashes(authorW + 2) + "+" + dashes(volW + 2) + "+";
-        String headerFormat = "| %-" + idW + "s | %-" + titleW + "s | %-" + priceW + "s | %-" + authorW + "s | %-" + volW + "s |%n";
-        String rowFormat = "| %" + idW + "d | %-" + titleW + "s | %" + priceW + "s | %-" + authorW + "s | %" + volW + "d |%n";
-
-        System.out.println(line);
-        System.out.printf(headerFormat, "ID", "Title", "Price", "Author", "Volume");
-        System.out.println(line);
-        for (ComicBook cb : comicBooks) {
-            System.out.printf(rowFormat, cb.getId(), cb.getTitle(),
-                    String.format(java.util.Locale.US, "%.2f", cb.getBookRentalPrice()),
-                    cb.getAuthor(), cb.getVolume());
-        }
-        System.out.println(line);
+        printSearchResult(comicBooks);
     }
 
     private void printSearchResult(ArrayList<ComicBook> list) {
-        int wTitle = 5, wAuthor = 6;
+        System.out.println(LINE);
+        System.out.printf(HEAD, "ID", "Title", "Rental Price", "Author", "Volume");
+        System.out.println(LINE);
         for (ComicBook b : list) {
-            wTitle = Math.max(wTitle, b.getTitle().length());
-            wAuthor = Math.max(wAuthor, b.getAuthor().length());
+            System.out.printf(Locale.US, ROW, b.getId(), b.getTitle(),
+                    b.getBookRentalPrice(), b.getAuthor(), b.getVolume());
         }
-        String line = "+" + dashes(6) + "+" + dashes(wTitle + 2) + "+" + dashes(14)
-                + "+" + dashes(wAuthor + 2) + "+" + dashes(8) + "+";
-        String headFmt = "| %4s | %-" + wTitle + "s | %12s | %-" + wAuthor + "s | %6s |%n";
-        String rowFmt = "| %4d | %-" + wTitle + "s | %12.2f | %-" + wAuthor + "s | %6d |%n";
-
-        System.out.println(line);
-        System.out.printf(headFmt, "ID", "Title", "Rental Price", "Author", "Volume");
-        System.out.println(line);
-        for (ComicBook b : list) {
-            System.out.print(String.format(Locale.US, rowFmt, b.getId(), b.getTitle(),
-                    b.getBookRentalPrice(), b.getAuthor(), b.getVolume()));
-        }
-        System.out.println(line);
-
+        System.out.println(LINE);
     }
 
     private String dashes(int n) {
